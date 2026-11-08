@@ -1,0 +1,23 @@
+name: tests
+
+# Installs every formula from source on macOS and Linux, then runs its test and audit.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Set up Homebrew (taps this repository)
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@main
+      - run: brew install --build-from-source javierlongoriaroche/tap/termtube
+      - run: brew test javierlongoriaroche/tap/termtube
+      - run: brew audit --strict --online javierlongoriaroche/tap/termtube
